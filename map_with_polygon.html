@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Map with Polygon Drawing</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; height: 500px; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        // Replace 'pk.eyJ1IjoiYXNlbGlhbiIsImEiOiJjbTZkemptZXcweG12MmxzNzRuMDNobXc4In0.3DF5509AP5ZwWuBu9b1cYw' with your actual Mapbox token
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYXNlbGlhbiIsImEiOiJjbTZkemptZXcweG12MmxzNzRuMDNobXc4In0.3DF5509AP5ZwWuBu9b1cYw';
+
+        // Initialize the map
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-122.4194, 37.7749], // San Francisco coordinates
+            zoom: 10
+        });
+
+        // Add drawing tools
+        const Draw = new MapboxDraw({
+            displayControlsDefault: false,
+            controls: {
+                polygon: true,
+                trash: true
+            },
+            defaultMode: 'draw_polygon'
+        });
+
+        map.addControl(Draw);
+
+        // Capture the drawn polygon
+        map.on('draw.create', updatePolygonData);
+        map.on('draw.update', updatePolygonData);
+        map.on('draw.delete', updatePolygonData);
+
+        function updatePolygonData(e) {
+            const data = Draw.getAll();
+            if (data.features.length > 0) {
+                const coordinates = data.features[0].geometry.coordinates;
+                console.log('Polygon coordinates:', coordinates);
+                alert('Polygon coordinates: ' + JSON.stringify(coordinates));
+            } else {
+                alert('No polygon drawn.');
+            }
+        }
+    </script>
+</body>
+</html>
